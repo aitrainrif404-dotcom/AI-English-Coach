@@ -1,0 +1,23 @@
+# Virtual Environment
+.venv/
+venv/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# VS Code (local user workspace state)
+.vscode/*
+!.vscode/settings.json
+
+# Audio and transcript data (keep directories tracked via .gitkeep)
+input/*
+!input/.gitkeep
+output/*
+!output/.gitkeep
