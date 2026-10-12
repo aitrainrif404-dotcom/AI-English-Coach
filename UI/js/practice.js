@@ -1,12 +1,7 @@
 /**
  * ==========================================================================
  * PRACTICE ARENA LOGIC
- * Edit this file when changing:
- * - 4 Category Cards selection (Grammar, Vocabulary, Listening, Writing)
- * - "Next: Choose Topic" button transition
- * - Subtopic module selection & exercise loading
- * - Answer input & word count tracking
- * - AI Feedback generation & collapsible cards
+ * Interactive track selection, subtopic drill exercises & AI evaluation
  * ==========================================================================
  */
 
@@ -30,23 +25,40 @@ function initPractice() {
     const submitAnswerBtn = document.getElementById('submitAnswerBtn');
     const feedbackPanel = document.getElementById('feedbackPanel');
 
+    // Helper: update the Next button label based on selected category
+    function updateNextButtonLabel() {
+        if (!practiceNextBtn) return;
+        const cat = practiceData[selectedCategory] || practiceData.grammar;
+        practiceNextBtn.innerHTML = `Start ${cat.title} (${cat.emoji}) →`;
+    }
+
     // 1. Category Selection
     categoryCards.forEach(card => {
         card.addEventListener('click', () => {
+            const isAlreadySelected = card.classList.contains('selected');
             categoryCards.forEach(c => c.classList.remove('selected'));
             card.classList.add('selected');
             selectedCategory = card.dataset.category || 'grammar';
+            updateNextButtonLabel();
+
+            // If user clicks the already selected card or double clicks, immediately transition
+            if (isAlreadySelected) {
+                goToStep2();
+            }
         });
     });
 
     // 2. Next Button -> Transition to Step 2
+    function goToStep2() {
+        loadCategoryExercise(selectedCategory);
+        if (practiceStep1) practiceStep1.classList.add('hidden');
+        if (practiceStep2) practiceStep2.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     if (practiceNextBtn) {
-        practiceNextBtn.addEventListener('click', () => {
-            loadCategoryExercise(selectedCategory);
-            if (practiceStep1) practiceStep1.classList.add('hidden');
-            if (practiceStep2) practiceStep2.classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
+        practiceNextBtn.addEventListener('click', goToStep2);
+        updateNextButtonLabel();
     }
 
     // 3. Back Button -> Return to 4 Big Thumb Options
@@ -109,7 +121,7 @@ function initPractice() {
         if (feedbackPanel) feedbackPanel.classList.add('hidden');
     }
 
-    // Word Count
+    // Word Count Tracker
     if (answerText && wordCountSpan) {
         answerText.addEventListener('input', () => {
             const words = answerText.value.trim().split(/\s+/).filter(w => w.length > 0).length;
@@ -120,20 +132,27 @@ function initPractice() {
     // Get AI Feedback
     if (submitAnswerBtn && feedbackPanel) {
         submitAnswerBtn.addEventListener('click', () => {
+            const textValue = answerText ? answerText.value.trim() : '';
+            if (!textValue) {
+                alert('Please type a response first before asking for AI Feedback!');
+                if (answerText) answerText.focus();
+                return;
+            }
+
             submitAnswerBtn.innerHTML = '<i data-lucide="loader" class="spin"></i> Analyzing...';
             if (window.lucide) lucide.createIcons();
 
             setTimeout(() => {
                 submitAnswerBtn.innerHTML = '<i data-lucide="sparkles"></i> Get AI Feedback';
                 if (window.lucide) lucide.createIcons();
-                buildFeedbackContent(selectedCategory, selectedSubtopicIndex);
+                buildFeedbackContent(selectedCategory, selectedSubtopicIndex, textValue);
                 feedbackPanel.classList.remove('hidden');
                 feedbackPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }, 1000);
+            }, 800);
         });
     }
 
-    function buildFeedbackContent(catKey, subIdx) {
+    function buildFeedbackContent(catKey, subIdx, userResponse) {
         const cat = practiceData[catKey] || practiceData.grammar;
         const sub = cat.subtopics[subIdx];
 
