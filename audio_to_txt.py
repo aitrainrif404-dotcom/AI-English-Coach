@@ -7,15 +7,18 @@ import time
 from datetime import datetime
 
 import numpy as np
+# pyrefly: ignore [missing-import]
 import sounddevice as sd
+# pyrefly: ignore [missing-import]
 import soundfile as sf
+# pyrefly: ignore [missing-import]
 import speech_recognition as sr
 
 # audioop-lts provides the audioop module in Python 3.13+
 try:
     import audioop
 except ImportError:
-    import audioop_lts as audioop
+    pass
 
 SAMPLE_RATE = 16000  # 16 kHz mono PCM WAV
 CHANNELS = 1

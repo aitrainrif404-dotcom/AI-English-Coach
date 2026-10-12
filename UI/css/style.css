@@ -1,0 +1,17 @@
+/* ==========================================================================
+   MASTER STYLESHEET
+   This file imports each individual stylesheet section for easy maintenance:
+   - base.css       : Colors, typography, reset, shared utility classes
+   - layout.css     : Header, desktop sidebar, mobile navigation, page container
+   - components.css : Cards, buttons, pills, progress rings, collapsible accordions
+   - chat.css       : AI Chat Coach (messages, sticky bottom input, quick prompts)
+   - practice.css   : Practice Arena (4 category cards with big thumbnails, next bar)
+   - test.css       : Speaking Test (topic selection, audio recorder, timer, scores)
+   ========================================================================== */
+
+@import url('base.css');
+@import url('layout.css');
+@import url('components.css');
+@import url('chat.css');
+@import url('practice.css');
+@import url('test.css');

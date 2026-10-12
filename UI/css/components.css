@@ -1,0 +1,249 @@
+/* ==========================================================================
+   COMPONENTS: Cards, Buttons, Badges, Progress Bars, Pills
+   Edit this file when changing: shared button styles, card appearance,
+   pill chips, progress bars, or any reusable UI element.
+   ========================================================================== */
+
+/* --- Card --- */
+.card {
+    background: var(--surface);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-sm);
+    padding: 24px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid rgba(0, 0, 0, 0.02);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* --- Pill Chip --- */
+.pill-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: var(--radius-pill);
+    font-size: 13px;
+    font-weight: 500;
+    background: var(--pale-yellow-bg);
+    color: #8A6D00;
+    white-space: nowrap;
+}
+
+.pill-chip.green {
+    background: var(--pale-green-bg);
+    color: var(--secondary-deep);
+}
+
+/* --- Badge --- */
+.badge-green {
+    background: #E8FAF1;
+    color: #1FA76A;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 14px;
+}
+
+.topic-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--pale-green-bg);
+    color: var(--secondary-deep);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 100px;
+}
+
+/* --- Primary Button --- */
+.btn-primary {
+    background: linear-gradient(135deg, #FFD43B 0%, #3ECF8E 100%);
+    border: none;
+    color: #1A1A1A;
+    font-weight: 600;
+    font-size: 16px;
+    padding: 16px 28px;
+    border-radius: var(--radius-pill);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(255, 212, 59, 0.3);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-family: var(--font);
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(255, 212, 59, 0.4);
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+/* --- Secondary Button --- */
+.btn-secondary {
+    background: var(--surface);
+    border: 1.5px solid #E5E7EB;
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 15px;
+    padding: 12px 22px;
+    border-radius: var(--radius-pill);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-family: var(--font);
+}
+
+.btn-secondary:hover {
+    background: #F9FAFB;
+    border-color: #D1D5DB;
+}
+
+/* --- Icon Button --- */
+.icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.icon-btn:hover {
+    background: #F3F4F6;
+}
+
+/* --- Progress Bar --- */
+.progress-bar {
+    height: 8px;
+    background: #F0F0F0;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #FFD43B, #3ECF8E);
+    border-radius: 10px;
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
+/* --- Progress Ring (Score Circle) --- */
+.progress-ring-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.progress-ring {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: conic-gradient(#3ECF8E 0deg 252deg, #F0F0F0 252deg 360deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.progress-ring::before {
+    content: '';
+    position: absolute;
+    width: 82px;
+    height: 82px;
+    background: #FFFFFF;
+    border-radius: 50%;
+}
+
+.progress-ring .score-inner {
+    position: relative;
+    font-size: 26px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: #1A1A1A;
+}
+
+/* --- Collapsible / Accordion --- */
+.collapsible-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.collapsible-header i,
+.collapsible-header svg {
+    transition: transform 0.2s ease;
+    color: var(--text-secondary);
+}
+
+.collapsible-content {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* --- Diff View (Correction Markup) --- */
+.diff-view {
+    font-family: 'Inter', monospace;
+    font-size: 15px;
+    padding: 6px 0;
+    line-height: 1.6;
+}
+
+.diff-view .wrong {
+    text-decoration: line-through;
+    color: #9CA3AF;
+    background: #FEF2F2;
+    padding: 0 4px;
+    border-radius: 4px;
+}
+
+.diff-view .correct {
+    color: #1FA76A;
+    font-weight: 600;
+    background: #E8FAF1;
+    padding: 0 4px;
+    border-radius: 4px;
+}
+
+/* --- Feedback Card --- */
+.feedback-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.feedback-card {
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid #F0F0F0;
+    border-left: 4px solid transparent;
+}
+
+.feedback-card.green-border  { border-left-color: var(--secondary-green); }
+.feedback-card.yellow-border { border-left-color: var(--primary-yellow); }

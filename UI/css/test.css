@@ -1,0 +1,321 @@
+/* ==========================================================================
+   TEST PAGE: Speaking Test Topics, Recording Controls, Waveforms,
+   Timers, IELTS Sub-scores, Feedback & Swipe Cards
+   Edit this file when changing: speaking test topics grid, microphone/record
+   button, audio waveform animation, timer countdown, or test score breakdown.
+   ========================================================================== */
+
+/* --- Topic Grid --- */
+.topic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+    max-height: 460px;
+    overflow-y: auto;
+    padding-right: 6px;
+    scroll-behavior: smooth;
+}
+
+.topic-grid::-webkit-scrollbar {
+    width: 5px;
+}
+
+.topic-grid::-webkit-scrollbar-thumb {
+    background: #E5E7EB;
+    border-radius: 10px;
+}
+
+.topic-card {
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 14px 8px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.topic-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.topic-card.selected {
+    border-color: var(--primary-yellow);
+    background: #FFFDF5;
+}
+
+.topic-card .emoji {
+    font-size: 26px;
+}
+
+.topic-card .topic-name {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.topic-card .difficulty {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 100px;
+    background: #F3F4F6;
+    color: var(--text-secondary);
+}
+
+.difficulty.easy {
+    background: #E8FAF1;
+    color: #1FA76A;
+}
+
+.difficulty.medium {
+    background: #FFF9E0;
+    color: #B38F00;
+}
+
+.difficulty.hard {
+    background: #FEF2F2;
+    color: #B91C1C;
+}
+
+/* --- Fixed Bottom Actions Bar for Test --- */
+.test-actions-bar {
+    position: sticky;
+    bottom: 0;
+    background: rgba(250, 250, 247, 0.96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 14px 0 10px;
+    margin-top: 12px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 767px) {
+    .test-actions-bar {
+        bottom: 74px;
+        background: rgba(250, 250, 247, 0.98);
+    }
+}
+
+/* --- Recording Area --- */
+.record-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    padding: 20px 0;
+}
+
+.record-button {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: var(--primary-yellow);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 44px;
+    box-shadow: 0 8px 24px rgba(255, 212, 59, 0.4);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #1A1A1A;
+}
+
+.record-button.active {
+    animation: pulse 1.5s infinite;
+    background: var(--secondary-green);
+    box-shadow: 0 8px 24px rgba(62, 207, 142, 0.4);
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(62, 207, 142, 0.4);
+    }
+    50% {
+        transform: scale(1.04);
+        box-shadow: 0 0 0 20px rgba(62, 207, 142, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(62, 207, 142, 0);
+    }
+}
+
+/* --- Waveform --- */
+.waveform {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 48px;
+}
+
+.wave-bar {
+    width: 6px;
+    background: linear-gradient(to top, #FFD43B, #3ECF8E);
+    border-radius: 10px;
+    animation: wave 1.2s infinite ease-in-out;
+}
+
+@keyframes wave {
+    0%, 100% {
+        height: 10px;
+    }
+    50% {
+        height: 38px;
+    }
+}
+
+/* --- Timer Ring --- */
+.timer-ring {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: conic-gradient(#FFD43B 0deg 180deg, #F0F0F0 180deg 360deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.timer-ring::before {
+    content: '';
+    position: absolute;
+    width: 108px;
+    height: 108px;
+    background: #FFFFFF;
+    border-radius: 50%;
+}
+
+.timer-text {
+    position: relative;
+    font-size: 24px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+/* --- Sub-score Grid & Breakdown --- */
+.sub-score-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 14px;
+}
+
+.sub-score-card {
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border: 1px solid #F0F0F0;
+}
+
+.sub-score-card .label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.sub-score-card .value {
+    font-size: 24px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.gap-analysis {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.gap-item {
+    background: #FAFAF7;
+    border-radius: 16px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    border-left: 4px solid var(--primary-yellow);
+}
+
+.gap-item .icon {
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.swipe-cards {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding: 4px 0 16px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+}
+
+.swipe-cards::-webkit-scrollbar {
+    height: 4px;
+}
+
+.swipe-cards::-webkit-scrollbar-thumb {
+    background: #E5E7EB;
+    border-radius: 10px;
+}
+
+.swipe-card {
+    flex: 0 0 280px;
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    scroll-snap-align: start;
+    border: 1px solid #F0F0F0;
+}
+
+/* --- Responsive for Test --- */
+@media (min-width: 768px) {
+    .topic-grid {
+        grid-template-columns: repeat(4, 1fr);
+        max-height: 520px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .topic-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .topic-grid {
+        grid-template-columns: repeat(3, 1fr);
+        max-height: 380px;
+    }
+    .topic-card .emoji {
+        font-size: 22px;
+    }
+    .topic-card .topic-name {
+        font-size: 11px;
+    }
+    .sub-score-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .record-button {
+        width: 90px;
+        height: 90px;
+        font-size: 36px;
+    }
+}
