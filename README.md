@@ -1,36 +1,78 @@
-# VocalPrep 🎙️
+# AI English Coach 🎙️✨
 
-**VocalPrep** is an interactive speech recording and transcription tool designed for English speaking practice, test preparation (IELTS, TOEFL, PTE, job interviews), and fluency drills.
+**AI English Coach** is a modern, modular AI-powered web application and speech practice tool designed for IELTS, TOEFL, and fluency preparation.
 
-Record your spoken answers, transcribe them automatically, and review your transcripts to inspect vocabulary, structure, and speaking clarity.
-
----
-
-## ✨ Features
-
-- **Live Microphone Recording**: High-fidelity 16 kHz mono audio capture with real-time timer display.
-- **Flexible Timing**: Set custom time limits (e.g., 60s for quick questions, 2–5 minutes for full mock presentations) or press `Ctrl+C` to stop early and transcribe immediately.
-- **Automatic Transcription**: Chunked audio transcription powered by Google Speech Recognition.
-- **Organized Storage**:
-  - `input/`: Preserves all recorded `.wav` files with timestamps.
-  - `output/`: Saves corresponding `.txt` transcripts for review and progress tracking.
-- **Existing Audio Support**: Pass an existing `.wav` file directly to transcribe without recording.
+It features an interactive frontend with an **AI Chat Coach**, a **4-Track Practice Arena** (Grammar, Vocabulary, Listening, Writing), and a **Full Speaking Test Simulator**, alongside **VocalPrep**, a Python-based audio capture and transcription engine.
 
 ---
 
-## 🚀 Quick Start
+## 🌟 Application Highlights
 
-### 1. Prerequisites
-- Python 3.10+ (Fully compatible with Python 3.13 via `audioop-lts`)
-- Microphone access enabled on macOS / Linux / Windows
+### 1. 💬 AI Chat Coach
+- Conversational English practice with instant feedback and grammar corrections.
+- Quick-suggestion chips (e.g. *Correct my grammar*, *Teach me idioms*, *Roleplay a cafe order*).
+- Modern sticky bottom input bar for a clean chat experience.
 
-### 2. Setup Virtual Environment
+### 2. 📚 Practice Arena (4 Targeted Tracks)
+- **Grammar Lessons**: Conditionals, inversion, passive voice, and complex connectors.
+- **Vocabulary Lessons**: Band 8+ collocations, natural idioms, and topic-specific vocabulary.
+- **Listening Tests**: Accent variation, connected speech comprehension, and note-taking.
+- **Writing Lessons**: Essay introductions, thesis generation, and paragraph coherence.
+- Real-time word counter and instant AI feedback with Band score analysis.
+
+### 3. 🎙️ Speaking Test Simulation
+- **24 IELTS Topics** categorized by difficulty (*Easy, Medium, Hard*) with a *🎲 Surprise Me* randomizer.
+- Live microphone recorder with animated audio waveforms and a 5-minute countdown ring.
+- Comprehensive IELTS score report covering **Fluency & Coherence**, **Lexical Resource**, **Grammatical Range**, and **Pronunciation**.
+
+---
+
+## 🚀 Running the Web App
+
+Start a local server from the repository root:
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/vocal-prep.git
-cd vocal-prep
+python3 -m http.server 3000
+```
 
+Open your browser to:
+- **`http://localhost:3000/UI/`** (or `http://localhost:3000/`)
+
+---
+
+## 📁 Modular UI Architecture
+
+The frontend is modularized for easy maintenance:
+
+```text
+UI/
+├── index.html            # Main SPA dashboard
+├── README.md             # Detailed UI maintenance guide
+├── css/                  # Modular styles
+│   ├── base.css          # Design tokens, typography, and reset
+│   ├── layout.css        # App shell, header, and navigation tabs
+│   ├── components.css    # Reusable buttons, cards, pills, progress rings
+│   ├── chat.css          # Chat Coach styling & sticky input bar
+│   ├── practice.css      # 4 practice track cards & exercise layout
+│   ├── test.css          # Speaking test topics, recorder & score reports
+│   └── style.css         # Master stylesheet importing all modular CSS
+└── js/                   # Modular scripts
+    ├── data.js           # Lesson questions & 24 test topics
+    ├── chat.js           # Chat logic, messages, and suggestions
+    ├── practice.js       # Track selector, exercises, and AI feedback
+    ├── test.js           # Voice recording, timer, and test evaluation
+    └── app.js            # App coordinator & page routing
+```
+
+---
+
+## 🎙️ VocalPrep CLI (Audio Recording & Transcription)
+
+The repository also includes `audio_to_txt.py` for live microphone recording and automated speech-to-text conversion.
+
+### 1. Setup
+
+```bash
 # Create and activate virtual environment
 python3 -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
@@ -39,50 +81,18 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
----
+### 2. Usage
 
-## 📖 Usage
-
-### Standard Practice Session (Default: 5 Minutes)
 ```bash
+# Standard 5-minute practice session (press Ctrl+C anytime to stop & transcribe)
 python audio_to_txt.py
-```
-- Start speaking into your microphone.
-- Press <kbd>Ctrl+C</kbd> whenever you are done to automatically finish and transcribe.
 
-### Timed Practice (e.g., 60-Second Drill)
-```bash
+# Timed drill (e.g., 60 seconds)
 python audio_to_txt.py --duration 60
-```
 
-### Transcribe an Existing Audio File
-```bash
+# Transcribe an existing .wav audio file
 python audio_to_txt.py --file input/my_practice_session.wav
 ```
-
----
-
-## 📁 Project Structure
-
-```
-vocal-prep/
-├── audio_to_txt.py       # Core recording and transcription engine
-├── requirements.txt      # Project dependencies
-├── input/                # Saved recorded audio sessions (.wav)
-├── output/               # Generated text transcripts (.txt)
-├── .vscode/              # Editor settings (Python interpreter path)
-├── .gitignore            # Clean git exclusion rules
-└── README.md             # Project documentation
-```
-
----
-
-## 🗺️ Roadmap for Speaking Practice
-
-- [ ] **WPM & Pacing Metrics**: Track words per minute and speech cadence.
-- [ ] **Filler Word Counter**: Detect hesitation markers (`um`, `uh`, `like`, `you know`).
-- [ ] **Vocabulary & Grammar Feedback**: AI-powered suggestions to elevate spoken responses for IELTS/TOEFL.
-- [ ] **Pronunciation & Fluency Scoring**: Confidence and phoneme accuracy tracking.
 
 ---
 
