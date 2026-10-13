@@ -136,7 +136,7 @@
             <p class="caption">${esc(o.desc || '')}</p>
             <div class="module-view-meta">
                 <span class="pill-chip">${soon ? 'Coming soon' : (o.count || items.length || 0) + ' topics'}</span>
-                ${items.length ? `<span class="pill-chip green">${doneCount}/${items.length} done</span>` : ''}
+                ${items.length ? `<span class="pill-chip green" data-act="done-count">${doneCount}/${items.length} done</span>` : ''}
                 <span class="pill-chip green">🎮 ${esc(game.type || 'quiz')} game</span>
             </div>
         `;
@@ -150,16 +150,72 @@
             return;
         }
 
-        // Modules list (real items, or skeleton placeholders until content lands)
-        const grid = el('div', 'module-grid');
+        // Two-pane layout: module list (left) + Q&A detail (right).
+        // List renders through components/module_list.js (green done / white todo).
+        const layout = el('div', 'module-layout');
+        const listPane = el('div', 'module-list-pane');
+        const listEl = el('div', 'module-list');
+        listPane.appendChild(listEl);
+        const detailPane = el('div', 'module-detail-pane');
+        layout.appendChild(listPane);
+        layout.appendChild(detailPane);
+        container.appendChild(layout);
+
+        const selectItem = (item, idx) => {
+            renderModuleDetail(detailPane, {
+                track, level, item, idx, total: items.length,
+                emoji: o.emoji, game,
+                onSubmitAnswer: o.onSubmitAnswer,
+                onToggleComplete: () => {
+                    // refresh list done-states + header counter, keep detail open
+                    paintList();
+                    paintHead();
+                    const id = item.id || ('module-' + (idx + 1));
+                    renderModuleDetail(detailPane, {
+                        track, level, item, idx, total: items.length,
+                        emoji: o.emoji, game,
+                        onSubmitAnswer: o.onSubmitAnswer,
+                        onToggleComplete: selectItemRefresh
+                    });
+                }
+            });
+            if (typeof o.onSelectModule === 'function') o.onSelectModule(item, idx);
+        };
+        const selectItemRefresh = (item, idx) => selectItem(item, idx);
+
+        const paintList = () => {
+            listEl.innerHTML = '';
+            if (window.ModuleList && typeof window.ModuleList.renderList === 'function') {
+                window.ModuleList.renderList(listEl, {
+                    track, level, items,
+                    fallbackEmoji: o.emoji,
+                    selectedId: null,
+                    onSelect: selectItem
+                });
+            } else {
+                items.forEach((item, idx) => listEl.appendChild(moduleCard(track, level, item, idx, {
+                    emoji: o.emoji,
+                    onSelectModule: selectItem
+                })));
+            }
+        };
+        const paintHead = () => {
+            const pill = head.querySelector('[data-act="done-count"]');
+            if (pill) pill.textContent = `${levelDoneCount(track, level, items)}/${items.length} done`;
+        };
+
         if (items.length) {
-            items.forEach((item, idx) => grid.appendChild(moduleCard(track, level, item, idx, o)));
+            paintList();
+            // Right side waits for a selection
+            detailPane.innerHTML = '';
+            detailPane.appendChild(el('p', 'caption', 'Select a module on the left to load its questions here.'));
         } else {
-            for (let i = 0; i < 3; i++) grid.appendChild(skeletonCard(i));
-            grid.appendChild(el('p', 'caption',
+            for (let i = 0; i < 3; i++) listEl.appendChild(skeletonCard(i));
+            listEl.appendChild(el('p', 'caption',
                 `Modules land here next — ${esc(String(o.count || 0))} topics from lessons/ fill these slots.`));
+            detailPane.innerHTML = '';
+            detailPane.appendChild(el('p', 'caption', 'Module questions load here once content lands.'));
         }
-        container.appendChild(grid);
 
         // Game banner
         const banner = el('div', 'game-banner');
@@ -175,6 +231,100 @@
         });
         banner.appendChild(play);
         container.appendChild(banner);
+    }
+
+    // ---------------- Right-side Q&A detail (module selected in list) ----------------
+    function renderModuleDetail(pane, opts) {
+        if (!pane) return;
+        const o = opts || {};
+        const track = o.track || 'grammar';
+        const level = o.level || '';
+        const item = o.item || {};
+        const idx = o.idx || 0;
+        const total = o.total || 0;
+        const id = item.id || ('module-' + (idx + 1));
+        const done = isComplete(track, level, id);
+        const hasQuestion = !!(item.question && String(item.question).trim());
+        const hasSet = Array.isArray(item.questions) && item.questions.length > 0;
+        pane.innerHTML = '';
+
+        const wrap = el('div', 'module-detail');
+        wrap.innerHTML = `
+            <p class="caption">${esc(track.toUpperCase())} · ${esc(level)} · MODULE ${esc(String(idx + 1))}${total ? ' OF ' + esc(String(total)) : ''}</p>
+            <h3>${esc(item.emoji || o.emoji || '📝')} ${esc(item.title || ('Module ' + (idx + 1)))}</h3>
+            <p class="caption">${esc(item.desc || '')}</p>
+        `;
+        // Structured topic body lives in components/learning.js (fallback below)
+        if (window.Learning && typeof window.Learning.renderTopicBody === 'function') {
+            window.Learning.renderTopicBody(wrap, {
+                item, track, level, idx, total,
+                emoji: o.emoji, game: o.game,
+                onSubmitAnswer: o.onSubmitAnswer,
+                onToggleComplete: o.onToggleComplete
+            });
+            pane.appendChild(wrap);
+            return;
+        }
+        // Fallback when learning.js is unavailable (reuses hasQuestion/hasSet above)
+        wrap.innerHTML += `
+            ${Array.isArray(item.learn) && item.learn.length ? `<div class="module-learn">${item.learn.map(l => `<span class="caption">• ${esc(l)}</span>`).join('')}</div>` : ''}
+            <div class="module-qa">
+                ${hasSet ? `<p class="module-question">${esc(String(item.questions.length))} questions — tap one to reveal its answer.</p>`
+                    : `<p class="module-question">${hasQuestion ? esc(item.question) : 'Questions from lessons/ land here next.'}</p>`}
+                ${item.hint ? `<p class="caption">💡 ${esc(item.hint)}</p>` : ''}
+            </div>
+            <div class="module-single-actions"></div>
+        `;
+        const actions = wrap.querySelector('.module-single-actions');
+
+        if (hasSet) {
+            const list = el('ol', 'module-questions');
+            item.questions.forEach((qq, qi) => {
+                const li = el('li', 'module-question-item');
+                const stars = '★'.repeat(Math.min(3, Math.max(1, qq.stars || 1)));
+                li.innerHTML = `
+                    <button class="module-question-q"><span class="q-stars">${stars}</span> ${esc(qq.q)}</button>
+                    <p class="module-answer-key hidden"><strong>Answer:</strong> ${esc(qq.answer || '')}</p>
+                `;
+                li.querySelector('.module-question-q').addEventListener('click', () => {
+                    li.querySelector('.module-answer-key').classList.toggle('hidden');
+                    li.classList.toggle('open');
+                });
+                list.appendChild(li);
+            });
+            wrap.insertBefore(list, actions);
+            if (item.outcome) {
+                wrap.insertBefore(el('p', 'caption', `✅ ${esc(item.outcome)}`), actions);
+            }
+        }
+
+        if (hasQuestion) {
+            const area = el('div', 'module-answer');
+            area.innerHTML = `
+                <textarea placeholder="Write your answer here..." rows="4"></textarea>
+                <div class="word-count"><span>0</span> words</div>
+            `;
+            const ta = area.querySelector('textarea');
+            const wc = area.querySelector('.word-count span');
+            ta.addEventListener('input', () => {
+                const n = ta.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+                wc.textContent = ta.value.trim() ? n : 0;
+            });
+            const submit = el('button', 'btn-primary', 'Get AI Feedback');
+            submit.addEventListener('click', () => {
+                if (typeof o.onSubmitAnswer === 'function') o.onSubmitAnswer(item, ta.value.trim(), ta);
+            });
+            area.appendChild(submit);
+            wrap.appendChild(area);
+        }
+
+        const toggle = el('button', done ? 'btn-secondary' : 'btn-primary', done ? '✓ Completed — Undo' : 'Mark Complete ✓');
+        toggle.addEventListener('click', () => {
+            const nowDone = toggleComplete(track, level, id);
+            if (typeof o.onToggleComplete === 'function') o.onToggleComplete(item, nowDone);
+        });
+        actions.appendChild(toggle);
+        pane.appendChild(wrap);
     }
 
     // ---------------- Single module page (level/topic/) ----------------
@@ -204,6 +354,18 @@
             if (typeof o.onBackModules === 'function') o.onBackModules();
         });
 
+        // Structured topic body lives in components/learning.js (fallback below)
+        if (window.Learning && typeof window.Learning.renderTopicBody === 'function') {
+            window.Learning.renderTopicBody(page, {
+                item, track, level, idx: (o.idx || 0), total,
+                emoji: o.emoji, game: o.game,
+                onSubmitAnswer: o.onSubmitAnswer,
+                onToggleComplete: o.onToggleComplete
+            });
+            container.appendChild(page);
+            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            return;
+        }
         const actions = page.querySelector('.module-single-actions');
         const toggle = el('button', done ? 'btn-secondary' : 'btn-primary', done ? '✓ Completed — Undo' : 'Mark Complete ✓');
         toggle.addEventListener('click', () => {

@@ -227,6 +227,15 @@ function initPractice() {
                 game: window.grammarGame || { type: 'quiz' },
                 onBackLevels: backToGrammarLevels,
                 onSelectModule: (item, idx) => showModuleSingle(mod, lv, sec, item, idx, items, showModules),
+                onSubmitAnswer: (item, text) => {
+                    if (!text) return;
+                    // Reuse the shared AI feedback builder for the active track
+                    buildFeedbackContent(selectedCategory, 0, text);
+                    if (feedbackPanel) {
+                        feedbackPanel.classList.remove('hidden');
+                        feedbackPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                },
                 onPlayGame: () => {
                     if (practiceQuestionHint) practiceQuestionHint.innerHTML = `🎮 ${escapeHtml(lv.level)} quiz starts with the module pages (next step).`;
                 }
