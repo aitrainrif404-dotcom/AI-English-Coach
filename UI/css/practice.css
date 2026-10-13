@@ -1,7 +1,24 @@
 /* ==========================================================================
-   PRACTICE PAGE: Practice category cards (Grammar, Vocabulary, Listening,
-   Writing), 4 big thumbnail options, subtopic modules, exercise editor,
-   word counter, and action bars.
+   PRACTICE ARENA STYLES — structured like JS (UI/js/practice/)
+   --------------------------------------------------------------------------
+   Mirrors:
+   - practiceUI.js : sections 0 (shared orchestrator: Step 1 / Step 2 shell)
+   - grammar.js    : section 1 (TRACK 1)
+   - vocabulary.js : section 2 (TRACK 2)
+   - listening.js  : section 3 (TRACK 3)
+   - writing.js    : section 4 (TRACK 4)
+   - practiceUI.js : sections 5-6 (exercise editor + feedback, shared)
+   - responsive    : section 7 (all tracks)
+
+   Hooks set by practiceUI.js (additive only, safe if absent):
+   - .practice-category-card[data-category="grammar|vocabulary|listening|writing"]
+   - #practiceStep2[data-active-track="..."]
+   - .subtopic-btn.track-grammar | .track-vocabulary | .track-listening | .track-writing
+   ========================================================================== */
+
+/* ==========================================================================
+   0. PRACTICE ORCHESTRATOR (mirrors practiceUI.js)
+   Shared Step 1 -> Step 2 shell. No per-track color here.
    ========================================================================== */
 
 /* --- Step 1: 4 Category Cards with Big Thumbnails --- */
@@ -25,6 +42,10 @@
     gap: 14px;
     position: relative;
     user-select: none;
+    /* per-track accent, defaults to primary-yellow (overridden in sections 1-4) */
+    --track-accent: var(--primary-yellow);
+    --track-accent-soft: rgba(255, 212, 59, 0.22);
+    --track-thumb-bg: #FAFAF7;
 }
 
 .practice-category-card:hover {
@@ -34,9 +55,9 @@
 }
 
 .practice-category-card.selected {
-    border-color: var(--primary-yellow);
+    border-color: var(--track-accent);
     background: #FFFDF7;
-    box-shadow: 0 8px 24px rgba(255, 212, 59, 0.22);
+    box-shadow: 0 8px 24px var(--track-accent-soft);
 }
 
 .category-thumb-wrapper {
@@ -48,6 +69,7 @@
     position: relative;
     box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.03);
     overflow: hidden;
+    background: var(--track-thumb-bg);
 }
 
 .category-thumb-emoji {
@@ -95,7 +117,7 @@
     margin-top: 10px;
 }
 
-/* --- Sticky Bottom Action Bar (Next Button) --- */
+/* --- Sticky Bottom Action Bar (Next Button, mirrors goToStep2) --- */
 .practice-actions-bar {
     position: sticky;
     bottom: 0;
@@ -117,7 +139,7 @@
     }
 }
 
-/* --- Step 2: Subtopics Selector List --- */
+/* --- Step 2 shell: Subtopics Selector List (mirrors renderSubtopics) --- */
 .subtopics-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -137,19 +159,21 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+    --track-accent: var(--primary-yellow);
+    --track-accent-soft: rgba(255, 212, 59, 0.25);
 }
 
 .subtopic-btn:hover {
     background: #FFFFFF;
-    border-color: var(--primary-yellow);
+    border-color: var(--track-accent);
     box-shadow: var(--shadow-sm);
     transform: translateY(-1px);
 }
 
 .subtopic-btn.selected {
     background: #FFFDF5;
-    border-color: var(--primary-yellow);
-    box-shadow: 0 2px 10px rgba(255, 212, 59, 0.25);
+    border-color: var(--track-accent);
+    box-shadow: 0 2px 10px var(--track-accent-soft);
 }
 
 .subtopic-btn .title {
@@ -164,7 +188,188 @@
     line-height: 1.4;
 }
 
-/* --- Step 2: Practice Question Card --- */
+/* ==========================================================================
+   1. TRACK 1 — GRAMMAR (mirrors grammar.js, id: 'grammar')
+   Accent only. Layout stays in section 0.
+   ========================================================================== */
+.practice-category-card[data-category="grammar"] {
+    --track-accent: #4C8DFF;
+    --track-accent-soft: rgba(76, 141, 255, 0.22);
+    --track-thumb-bg: #EEF4FF;
+}
+
+.subtopic-btn.track-grammar {
+    --track-accent: #4C8DFF;
+    --track-accent-soft: rgba(76, 141, 255, 0.25);
+}
+
+#practiceStep2[data-active-track="grammar"] .question-card {
+    border-left-color: #4C8DFF;
+}
+
+/* --- Grammar CEFR level cards (mirrors grammar.js levels + grammar/A1-C2.js) --- */
+.grammar-levels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 6px;
+}
+
+.grammar-level-card {
+    background: var(--surface);
+    border: 2px solid #F0F0F0;
+    border-radius: 18px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+    font-family: var(--font);
+    box-shadow: var(--shadow-sm);
+}
+
+.grammar-level-card:hover {
+    transform: translateY(-2px);
+    border-color: #4C8DFF;
+    box-shadow: 0 8px 24px rgba(76, 141, 255, 0.20);
+}
+
+.grammar-level-card.selected {
+    border-color: #4C8DFF;
+    background: #F7FAFF;
+    box-shadow: 0 8px 24px rgba(76, 141, 255, 0.25);
+}
+
+.grammar-level-card.is-soon {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.grammar-level-thumb {
+    height: 84px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #EEF4FF 0%, #D3E3FF 100%);
+}
+
+.grammar-level-code {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #1A1A1A;
+}
+
+.grammar-level-emoji {
+    font-size: 30px;
+}
+
+.grammar-level-card h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.grammar-level-card .caption {
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+
+.grammar-level-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 2px;
+}
+
+.grammar-level-count {
+    font-size: 11px;
+    font-weight: 700;
+    background: #EEF4FF;
+    color: #2B5FD9;
+    padding: 3px 10px;
+    border-radius: 100px;
+}
+
+.grammar-level-count.soon {
+    background: #F0F0F0;
+    color: var(--text-secondary);
+}
+
+@media (max-width: 640px) {
+    .grammar-levels-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 420px) {
+    .grammar-levels-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================================================================
+   2. TRACK 2 — VOCABULARY (mirrors vocabulary.js, id: 'vocabulary')
+   ========================================================================== */
+.practice-category-card[data-category="vocabulary"] {
+    --track-accent: var(--secondary-green);
+    --track-accent-soft: rgba(62, 207, 142, 0.25);
+    --track-thumb-bg: #E8FAF1;
+}
+
+.subtopic-btn.track-vocabulary {
+    --track-accent: var(--secondary-green);
+    --track-accent-soft: rgba(62, 207, 142, 0.25);
+}
+
+#practiceStep2[data-active-track="vocabulary"] .question-card {
+    border-left-color: var(--secondary-green);
+}
+
+/* ==========================================================================
+   3. TRACK 3 — LISTENING (mirrors listening.js, id: 'listening')
+   ========================================================================== */
+.practice-category-card[data-category="listening"] {
+    --track-accent: #9B6DFF;
+    --track-accent-soft: rgba(155, 109, 255, 0.22);
+    --track-thumb-bg: #F3EEFF;
+}
+
+.subtopic-btn.track-listening {
+    --track-accent: #9B6DFF;
+    --track-accent-soft: rgba(155, 109, 255, 0.25);
+}
+
+#practiceStep2[data-active-track="listening"] .question-card {
+    border-left-color: #9B6DFF;
+}
+
+/* ==========================================================================
+   4. TRACK 4 — WRITING (mirrors writing.js, id: 'writing')
+   ========================================================================== */
+.practice-category-card[data-category="writing"] {
+    --track-accent: #FF9F45;
+    --track-accent-soft: rgba(255, 159, 69, 0.25);
+    --track-thumb-bg: #FFF4E8;
+}
+
+.subtopic-btn.track-writing {
+    --track-accent: #FF9F45;
+    --track-accent-soft: rgba(255, 159, 69, 0.28);
+}
+
+#practiceStep2[data-active-track="writing"] .question-card {
+    border-left-color: #FF9F45;
+}
+
+/* ==========================================================================
+   5. EXERCISE EDITOR (mirrors renderExercise + word counter)
+   Shared by all 4 tracks.
+   ========================================================================== */
 .question-card {
     border-left: 6px solid var(--primary-yellow);
     background: #FFFFFF;
@@ -173,7 +378,6 @@
     box-shadow: var(--shadow-sm);
 }
 
-/* --- Step 2: Interactive Response Textarea --- */
 .textarea-wrapper {
     background: #FFFFFF;
     border-radius: 20px;
@@ -233,7 +437,29 @@
     color: var(--text-primary);
 }
 
-/* --- Responsive Adjustments --- */
+/* ==========================================================================
+   6. FEEDBACK (mirrors buildFeedbackContent — shared cards)
+   Per-track criteria colors reuse the track accent via Step2 hook.
+   ========================================================================== */
+#practiceStep2[data-active-track="grammar"] .feedback-card.green-border {
+    border-left-color: #4C8DFF;
+}
+
+#practiceStep2[data-active-track="vocabulary"] .feedback-card.green-border {
+    border-left-color: var(--secondary-green);
+}
+
+#practiceStep2[data-active-track="listening"] .feedback-card.green-border {
+    border-left-color: #9B6DFF;
+}
+
+#practiceStep2[data-active-track="writing"] .feedback-card.green-border {
+    border-left-color: #FF9F45;
+}
+
+/* ==========================================================================
+   7. RESPONSIVE (all tracks)
+   ========================================================================== */
 @media (min-width: 1024px) {
     .practice-category-scroll {
         grid-template-columns: repeat(4, 1fr);
@@ -274,4 +500,213 @@
     .subtopics-list {
         grid-template-columns: 1fr;
     }
+    .module-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================================================================
+   8. MODULE VIEW (mirrors modulepractice.js — shared by all tracks)
+   Grammar uses it now; vocabulary/listening/writing plug in later.
+   ========================================================================== */
+.module-view-head {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.module-view-head h3 {
+    font-size: 18px;
+}
+
+.module-view-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.module-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.module-card {
+    background: #FAFAF7;
+    border: 1.5px solid #F0F0F0;
+    border-radius: 16px;
+    padding: 14px;
+    text-align: left;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.module-card:hover {
+    background: #FFFFFF;
+    border-color: var(--primary-yellow);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+}
+
+.module-card.selected {
+    background: #FFFDF5;
+    border-color: var(--primary-yellow);
+    box-shadow: 0 2px 10px rgba(255, 212, 59, 0.25);
+}
+
+.module-card.is-skeleton {
+    cursor: default;
+    opacity: 0.75;
+    border-style: dashed;
+}
+
+.module-card.is-skeleton:hover {
+    transform: none;
+    box-shadow: none;
+    background: #FAFAF7;
+}
+
+.module-index {
+    flex: 0 0 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: #EEF4FF;
+    color: #2B5FD9;
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.module-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.module-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.module-type {
+    font-size: 11px;
+    font-weight: 700;
+    background: #F0F0F0;
+    color: var(--text-secondary);
+    padding: 3px 10px;
+    border-radius: 100px;
+    white-space: nowrap;
+}
+
+.game-banner {
+    margin-top: 14px;
+    background: linear-gradient(135deg, #FFF9E0 0%, #FFE58F 100%);
+    border-radius: 18px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    box-shadow: var(--shadow-sm);
+}
+
+.game-banner h4 {
+    font-size: 16px;
+}
+
+/* Grammar accent for module view */
+#practiceStep2[data-active-track="grammar"] .module-card.selected {
+    border-color: #4C8DFF;
+    box-shadow: 0 2px 10px rgba(76, 141, 255, 0.25);
+}
+
+#practiceStep2[data-active-track="grammar"] .module-index {
+    background: #EEF4FF;
+    color: #2B5FD9;
+}
+
+/* --- Module thumbnails + completion states (done = green, todo = white) --- */
+.module-thumb {
+    flex: 0 0 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #EEF4FF;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.module-card.is-done {
+    border-color: var(--secondary-green);
+    background: #F2FCF7;
+}
+
+.module-card.is-done:hover {
+    border-color: var(--secondary-green);
+    box-shadow: 0 2px 10px rgba(62, 207, 142, 0.30);
+}
+
+.module-done-badge {
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--secondary-green);
+    color: #FFFFFF;
+    padding: 3px 10px;
+    border-radius: 100px;
+    white-space: nowrap;
+}
+
+/* --- Back links (levels <-> modules <-> single) --- */
+.link-back {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    align-self: flex-start;
+}
+
+.link-back:hover {
+    color: var(--text-primary);
+    text-decoration: underline;
+}
+
+/* --- Single module page (level/topic/) --- */
+.module-single {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.module-single h3 {
+    font-size: 18px;
+}
+
+.module-single-body {
+    background: #FAFAF7;
+    border: 1px dashed #E2E5EA;
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 6px;
+}
+
+.module-single-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
 }
